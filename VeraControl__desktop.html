@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>window.FontAwesomeConfig = { autoReplaceSvg: 'nest' };</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vera Control - Certaine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = { theme: { extend: {
+            colors: { ink:'#12181A', paper:'#FFFFFF', forest:'#173226', action:'#1F8F52', amber:'#C1673C', border:'#E7E9E7', muted:'#6B7570', ice:'#F8F9F8' },
+            fontFamily: { sans:['Inter','sans-serif'], display:['Manrope','sans-serif'], mono:['IBM Plex Mono','monospace'] }
+        }}}
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; color: #12181A; background-color: #FFFFFF; }
+        .tab-active { border-bottom: 2px solid #12181A; opacity: 1; color: #12181A; }
+        .tab-inactive { opacity: 0.4; cursor: pointer; }
+        .tab-inactive:hover { opacity: 0.7; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #E7E9E7; border-radius: 10px; }
+
+        .timeline-step { position: relative; flex: 1; text-align: center; cursor: pointer; }
+        .timeline-step::before { content: ''; position: absolute; top: 10px; left: -50%; width: 100%; height: 2px; background: #E7E9E7; z-index: 1; }
+        .timeline-step:first-child::before { display: none; }
+        .timeline-step.completed::before { background: #1F8F52; }
+        .timeline-dot { width: 20px; height: 20px; border-radius: 50%; background: #E7E9E7; border: 4px solid #FFFFFF; box-shadow: 0 0 0 1px #E7E9E7; margin: 0 auto; position: relative; z-index: 2; transition: transform .15s ease; }
+        .timeline-step:hover .timeline-dot { transform: scale(1.15); }
+        .timeline-step.completed .timeline-dot { background: #1F8F52; box-shadow: 0 0 0 1px #1F8F52; }
+        .timeline-step.active .timeline-dot { background: #C1673C; box-shadow: 0 0 0 1px #C1673C; }
+
+        .comm-row { display: flex; gap: 20px; padding: 20px 8px; border-top: 1px solid #E7E9E7; cursor: pointer; transition: background .15s ease; }
+        .comm-row:first-child { border-top: none; }
+        .comm-row:hover { background: #F8F9F8; }
+        .comm-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; flex-shrink: 0; }
+        .comm-icon.slack { background: #4A154B; }
+        .comm-icon.email { background: #1F8F52; }
+        .comm-icon.call { background: #173226; }
+        .comm-icon.sms { background: #007AFF; }
+
+        .milestone-row { cursor: pointer; }
+        .milestone-row.highlight { background: #FBEEE6; }
+
+        .live-card { background: #fff; border: 1px solid #E7E9E7; border-radius: 16px; padding: 20px; cursor: pointer; transition: box-shadow .15s ease, transform .15s ease; }
+        .live-card:hover { box-shadow: 0 12px 24px -12px rgba(0,0,0,0.12); transform: translateY(-2px); }
+        .live-dot { width: 7px; height: 7px; border-radius: 50%; background: #1F8F52; animation: pulse 1.6s ease-in-out infinite; display: inline-block; }
+        @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.3;} }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(18,24,26,0.45); display: none; align-items: center; justify-content: center; z-index: 200; padding: 24px; }
+        .modal-overlay.show { display: flex; }
+        .modal-box { background: #fff; border-radius: 20px; max-width: 520px; width: 100%; padding: 32px; max-height: 80vh; overflow-y: auto; }
+        .deal-card { cursor: pointer; transition: all .15s ease; }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden">
+
+    <nav class="h-16 px-8 flex items-center border-b border-border shrink-0 bg-white z-50">
+        <div class="font-display font-extrabold text-xl tracking-tighter">certain<span class="text-action">e</span></div>
+        <div class="ml-12 flex gap-8 text-[13px] font-semibold">
+            <a href="Portfolio__desktop.html" class="py-5 opacity-40 hover:opacity-70 transition-opacity">Portfolio</a>
+            <a href="#" class="py-5 border-b-2 border-action text-ink">Vera Control</a>
+        </div>
+        <div class="ml-auto flex items-center gap-6">
+            <div class="font-mono text-[10px] text-action font-semibold bg-[#EBF6EF] px-3 py-1 rounded tracking-tight">VERA: 12 DEALS ACTIVE</div>
+            <div class="w-8 h-8 rounded-full bg-forest text-white flex items-center justify-center font-display text-xs font-bold">JD</div>
+        </div>
+    </nav>
+
+    <main class="flex-1 flex overflow-hidden">
+
+        <aside class="w-[280px] border-r border-border bg-white p-8 flex flex-col gap-8 shrink-0 overflow-y-auto">
+            <div>
+                <div class="font-mono text-[10px] text-muted uppercase tracking-[0.06em] mb-6">My Deals</div>
+                <div class="space-y-4" id="dealSidebar"></div>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden bg-white border-r border-border">
+
+            <header class="pt-10 px-12 pb-8">
+                <div class="flex justify-between items-start mb-12">
+                    <div>
+                        <h1 id="dealTitle" class="font-display font-extrabold text-[28px] tracking-tight leading-none mb-2"></h1>
+                        <p id="dealSubtitle" class="text-sm font-medium text-muted"></p>
+                    </div>
+                    <button class="px-5 py-2 bg-ink text-white rounded-md text-[13px] font-bold hover:bg-ink/90 transition-colors shadow-sm" onclick="setTab('comms')">Ask Vera</button>
+                </div>
+
+                <div class="flex mb-12 px-4" id="timelineRow"></div>
+
+                <div class="flex gap-10 text-sm font-bold text-ink border-b border-border" id="tabs-nav">
+                    <span class="pb-3 tab-active" data-tab="overview">Overview</span>
+                    <span class="pb-3 tab-inactive" data-tab="lanes">Lender Lanes</span>
+                    <span class="pb-3 tab-inactive" data-tab="live">Right Now</span>
+                    <span class="pb-3 tab-inactive" data-tab="comms">Communications</span>
+                    <span class="pb-3 tab-inactive" data-tab="files">Files</span>
+                </div>
+            </header>
+
+            <div class="flex-1 overflow-y-auto px-12 pb-12">
+
+                <div id="tab-overview" class="tab-content active space-y-12">
+                    <div id="partyReviewSection"></div>
+                    <div>
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-mono text-[10px] text-muted uppercase tracking-widest font-bold">Milestone</h3>
+                            <div class="flex gap-12 font-mono text-[10px] text-muted uppercase tracking-widest font-bold">
+                                <span class="w-24">Due Date</span><span class="w-24">Status</span><span class="w-32">Documents</span>
+                            </div>
+                        </div>
+                        <div class="space-y-1" id="milestoneList"></div>
+                    </div>
+
+                    <div>
+                        <h3 class="font-display font-bold text-lg mb-6">Documents Vera Is Tracking</h3>
+                        <div class="space-y-4" id="docList"></div>
+
+                        <div id="uploadDropZone" class="mt-6 border-2 border-dashed border-border rounded-xl p-6 text-center bg-ice/20 cursor-pointer">
+                            <p class="text-[13px] font-bold mb-1">Drag a received document here, or click to choose one</p>
+                            <p class="text-[11px] text-muted">Vera reads it, figures out what it is, and proposes a match for you to confirm, nothing gets marked received automatically.</p>
+                            <input type="file" id="uploadDropInput" accept="application/pdf,.xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" class="hidden">
+                        </div>
+                        <div id="uploadReviewCard" class="mt-4"></div>
+                    </div>
+
+                    <div class="border-2 border-dashed border-border rounded-xl p-8 bg-ice/20">
+                        <div class="font-display font-bold text-lg mb-2">Start a new real deal</div>
+                        <p class="text-sm text-muted mb-4">Upload a real PDF, or paste the text directly. Vera reads it, extracts the real parties and dates, and creates a genuine new deal, no manual setup.</p>
+
+                        <div class="flex items-center gap-3 mb-4">
+                            <input type="file" id="intakeFile" accept="application/pdf,.xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" class="text-[13px]">
+                            <button id="intakeFileSubmit" class="px-5 py-2 bg-ink text-white rounded-md text-[13px] font-bold whitespace-nowrap">Upload PDF</button>
+                        </div>
+
+                        <div class="text-[11px] font-mono text-muted uppercase tracking-widest mb-3">Or paste text instead</div>
+                        <textarea id="intakeText" rows="5" class="w-full border border-border rounded-lg p-4 text-[13px] font-mono mb-3" placeholder="Paste real (or realistic sample) purchase agreement text here..."></textarea>
+                        <button id="intakeSubmit" class="px-5 py-2.5 bg-white border border-border text-ink rounded-md text-[13px] font-bold">Create From Text</button>
+
+                        <div id="intakeResult" class="mt-4 text-[13px]"></div>
+                    </div>
+                </div>
+
+                <div id="tab-lanes" class="tab-content">
+                    <div class="flex gap-8 overflow-x-auto pb-4" id="laneList"></div>
+                </div>
+
+                <div id="tab-live" class="tab-content">
+                    <h3 class="font-display font-bold text-lg mb-2">What Vera's doing this second.</h3>
+                    <p class="text-[13px] text-muted mb-8">Not the history, that's Communications. This is what's actively in motion right now.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="liveGrid"></div>
+                </div>
+
+                <div id="tab-comms" class="tab-content">
+                    <div class="flex justify-between items-center mb-8">
+                        <h3 class="font-display font-bold text-lg">Every party. Every channel. In order.</h3>
+                        <div class="flex gap-2">
+                            <span id="commCount" class="text-[10px] font-mono font-bold text-muted bg-ice px-3 py-1.5 rounded border border-border"></span>
+                            <span class="text-[10px] font-mono font-bold text-action bg-action/10 px-3 py-1.5 rounded">ALL RECORDED</span>
+                        </div>
+                    </div>
+                    <div class="bg-white border border-border rounded-2xl px-6 shadow-sm" id="commList"></div>
+                </div>
+
+                <div id="tab-files" class="tab-content">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-display font-bold text-lg">Every real file stored for this deal.</h3>
+                        <button class="px-3 py-1.5 bg-ink text-white text-[11px] font-bold rounded" onclick="loadFilesTab()">Refresh</button>
+                    </div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <input type="file" id="filesTabUploadInput" accept="application/pdf,.xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" class="text-[13px]">
+                        <button class="px-3 py-1.5 bg-action text-white text-[11px] font-bold rounded" onclick="uploadFromFilesTab()">Upload</button>
+                    </div>
+                    <div id="filesTabUploadStatus" class="text-[12px] mb-4"></div>
+                    <div id="filesList" class="bg-white border border-border rounded-2xl p-6 shadow-sm">
+                        <p class="text-[13px] text-muted italic">Loading...</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="px-12 py-6 border-t border-border bg-white shrink-0">
+                <p class="text-[10px] leading-relaxed text-muted font-medium italic">Vera coordinates data and parties to ensure closing readiness. She does not price deals, underwrite risk, approve credit, or sign legal instruments.</p>
+            </div>
+        </div>
+
+        <aside class="w-[380px] flex flex-col bg-white shrink-0">
+            <div class="flex border-b border-border">
+                <div class="flex-1 py-4 text-center text-[13px] font-bold border-b-2 border-action text-ink cursor-pointer" id="sideTabVera" onclick="setSidePanel('vera')">Vera</div>
+                <div class="flex-1 py-4 text-center text-[13px] font-bold opacity-40 hover:opacity-100 cursor-pointer" id="sideTabInfo" onclick="setSidePanel('info')">Deal Info</div>
+            </div>
+            <div class="flex-1 overflow-y-auto bg-white" id="sidePanelVera">
+                <div class="p-6 border-b border-border" id="suggestionQueue"></div>
+                <div class="p-6 space-y-8" id="chatThread"></div>
+            </div>
+            <div class="flex-1 overflow-y-auto p-6 hidden" id="sidePanelInfo"></div>
+            <div class="p-6 border-t border-border" id="chatInputBar">
+                <div class="relative">
+                    <input type="text" id="chatInput" placeholder="Ask Vera anything..." class="w-full bg-ice border border-border rounded-xl px-5 py-3.5 pr-12 text-[13px] font-medium focus:outline-none focus:border-action transition-all">
+                    <button id="chatSend" class="absolute right-3 top-2 w-10 h-10 bg-ink text-white rounded-full flex items-center justify-center hover:bg-ink/90 transition-colors"><i class="fa-solid fa-arrow-up text-xs"></i></button>
+                </div>
+            </div>
+        </aside>
+
+    </main>
+
+    <div class="modal-overlay" id="modalOverlay"><div class="modal-box" id="modalBox"></div></div>
+
+    <script>
+
+    // Real deals, loaded live from Supabase, not hardcoded. Any deal that
+    // actually exists in the database shows up here automatically, no
+    // code changes needed to add a new real deal.
+    let deals = {};
+    let activeDealKey = null;
+
+    const statusPillClassMap = { on_track: "action", at_risk: "amber", stalled: "amber", closed: "muted", dead: "muted" };
+    const statusLabelMap = { on_track: "On Track", at_risk: "At Risk", stalled: "Stalled", closed: "Closed", dead: "Dead" };
+
+    async function loadAllDeals() {
+        const res = await fetch("http://localhost:5001/api/deals");
+        const data = await res.json();
+        if (!data.ok) { document.getElementById('dealSidebar').innerHTML = `<p class="text-[12px] text-amber">Could not load deals: ${data.error}</p>`; return; }
+
+        for (const d of data.deals) {
+            deals[d.id] = {
+                dealId: d.id,
+                name: d.name,
+                value: d.deal_value_cents ? `$${(d.deal_value_cents / 100).toLocaleString()}` : "Value not set",
+                closeDate: d.status === 'closed' ? 'Closed' : (d.target_close_date || 'No date set'),
+                status: statusLabelMap[d.status] || d.status,
+                statusClass: statusPillClassMap[d.status] || "muted",
+                raw: d,
+                loaded: false,
+            };
+        }
+        const firstKey = Object.keys(deals)[0];
+        const urlParams = new URLSearchParams(window.location.search);
+        const requestedDealId = urlParams.get('deal');
+        const requestedKey = requestedDealId && deals[requestedDealId] ? requestedDealId : firstKey;
+        if (requestedKey) { activeDealKey = requestedKey; await selectDeal(requestedKey); }
+    }
+
+    async function loadDealDetail(dealId) {
+        const res = await fetch(`http://localhost:5001/api/deal/${dealId}`);
+        const data = await res.json();
+        if (!data.ok) return null;
+
+        const milestones = data.milestones.map(m => ({
+            label: m.label, due: m.due_date, status: m.status === 'satisfied' ? 'Completed' : (m.status === 'pending' ? 'Pending' : m.status),
+            statusClass: m.status === 'satisfied' ? 'action' : 'muted', doc: '-', detail: `Status: ${m.status}.`,
+        }));
+        const partyById = {};
+        data.parties.forEach(p => { partyById[p.id] = p; });
+        const docs = data.checklist.map(c => {
+            const rp = partyById[c.responsible_party_id];
+            return { id: c.id, label: c.document_type.replace(/_/g, ' '), status: c.status, responsibleName: rp ? rp.name : null, documentId: c.document_id };
+        });
+        const lanes = data.lanes.map(l => {
+            const laneItems = data.checklist.filter(c => c.lane_id === l.id);
+            const doneCount = laneItems.filter(c => c.status === 'received' || c.status === 'verified').length;
+            const realPct = laneItems.length ? Math.round((doneCount / laneItems.length) * 100) : 0;
+            const lenderContact = data.parties.find(p => p.role === 'lender_contact' && (p.org_name === l.label || p.name === l.label));
+            const lastMsg = lenderContact ? data.messages.filter(m => m.party_id === lenderContact.id).sort((a, b) => new Date(b.sent_at) - new Date(a.sent_at))[0] : null;
+            return {
+                id: l.id, name: l.label, pct: realPct, status: l.status,
+                lenderContact,
+                lastActivity: lastMsg ? { channel: lastMsg.channel, time: new Date(lastMsg.sent_at).toLocaleString(), body: lastMsg.body } : null,
+                items: laneItems.map(c => {
+                    const rp = partyById[c.responsible_party_id];
+                    return { id: c.id, label: c.document_type.replace(/_/g, ' '), status: c.status.toUpperCase(), cls: c.status === 'received' || c.status === 'verified' ? 'action' : (c.status === 'flagged' ? 'amber' : 'muted'), responsibleName: rp ? rp.name : null };
+                }),
+            };
+        });
+        const comms = data.messages.map(m => ({
+            icon: m.channel, who: m.direction === 'outbound' ? 'Vera' : 'Contact', ctx: `via ${m.channel}`,
+            time: new Date(m.sent_at).toLocaleString(), body: m.body,
+        }));
+        const gapsRes = await fetch(`http://localhost:5001/api/gaps/${dealId}`);
+        const gapsData = await gapsRes.json();
+        const suggestions = gapsData.ok ? gapsData.gaps : [];
+
+        const findPartyByRole = (role) => (data.parties.find(p => p.role === role) || {}).name;
+        const attorneys = data.parties.filter(p => p.role === 'attorney').map(p => p.name).join(', ');
+        return {
+            milestones, docs, lanes, live: [], comms, parties: data.parties,
+            info: {
+                address: data.deal.property_address || 'Not set',
+                sponsor: findPartyByRole('sponsor') || 'Not identified',
+                buyer: findPartyByRole('buyer') || 'Not identified',
+                attorneys: attorneys || 'Not identified',
+                broker: 'Ben Townsend',
+                notes: data.deal.notes || '',
+            },
+            suggestions,
+        };
+    }
+
+    function renderPartyReview(d) {
+        const el = document.getElementById('partyReviewSection');
+        const unreviewed = (d.parties || []).filter(p => !p.reviewed_by_human);
+        if (!unreviewed.length) {
+            el.innerHTML = `<div class="flex justify-between items-center p-4 rounded-xl border border-border mb-6">
+                <span class="text-[13px] text-muted">All parties reviewed.</span>
+                <button class="px-3 py-1.5 bg-ink text-white text-[11px] font-bold rounded" onclick="sendKickoff()">Send Kickoff Email to Confirmed Parties</button>
+            </div><div id="kickoffResult" class="text-[12px] mb-4"></div>`;
+            return;
+        }
+        el.innerHTML = `
+            <div class="p-6 rounded-xl border border-amber/30 bg-amber/5">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="font-display font-bold text-lg"><i class="fa-solid fa-user-check mr-2 text-amber"></i>Parties need your review before Vera can contact them</h3>
+                    <button class="px-3 py-1.5 bg-ink text-white text-[11px] font-bold rounded shrink-0" onclick="sendKickoff()">Send Kickoff Email to Confirmed Parties</button>
+                </div>
+                <p class="text-[13px] text-muted mb-2">These were extracted automatically. Check the info is right, fix anything that's wrong, and confirm before Vera reaches out to any of them.</p>
+                <div id="kickoffResult" class="text-[12px] mb-4"></div>
+                <div class="space-y-4">
+                ${unreviewed.map(p => `
+                    <div class="bg-white border border-border rounded-lg p-4" id="party-${p.id}">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="text-[10px] font-mono uppercase text-muted bg-ice px-2 py-1 rounded">${p.role.replace(/_/g, ' ')}</span>
+                            <input class="party-name-input font-bold text-[13px] border-b border-border focus:outline-none flex-1" value="${p.name || ''}" placeholder="Name">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <input class="party-email-input text-[12px] border border-border rounded px-3 py-2" value="${p.email || ''}" placeholder="Email">
+                            <input class="party-phone-input text-[12px] border border-border rounded px-3 py-2" value="${p.phone || ''}" placeholder="Phone">
+                        </div>
+                        <button class="px-4 py-2 bg-action text-white text-[12px] font-bold rounded" onclick="confirmParty('${p.id}')">Confirm, this is correct</button>
+                    </div>`).join('')}
+                </div>
+            </div>`;
+    }
+
+    function confirmParty(partyId) {
+        const card = document.getElementById('party-' + partyId);
+        const name = card.querySelector('.party-name-input').value;
+        const email = card.querySelector('.party-email-input').value;
+        const phone = card.querySelector('.party-phone-input').value;
+        fetch(`http://localhost:5001/api/party/${partyId}/confirm`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, phone, consent_confirmed: true }),
+        }).then(r => r.json()).then(async data => {
+            if (!data.ok) { card.innerHTML = `<p class="text-amber text-[12px]">Error: ${data.error}</p>`; return; }
+            card.innerHTML = `<p class="text-action text-[12px] font-bold"><i class="fa-solid fa-check mr-2"></i>Confirmed. Vera can now contact ${name} directly.</p>`;
+            const detail = await loadDealDetail(deals[activeDealKey].dealId);
+            if (detail) Object.assign(deals[activeDealKey], detail);
+        }).catch(err => { card.innerHTML = `<p class="text-amber text-[12px]">Could not reach Vera's backend.</p>`; });
+    }
+    window.confirmParty = confirmParty;
+
+    function statusPillClasses(cls) {
+        const map = { action: "bg-action/10 text-action", amber: "bg-amber/10 text-amber", forest: "text-ice bg-forest/80", muted: "bg-border/40 text-muted" };
+        return map[cls] || map.muted;
+    }
+
+    function renderSidebar() {
+        const el = document.getElementById('dealSidebar');
+        el.innerHTML = Object.entries(deals).map(([key, d]) => `
+            <div class="deal-card p-4 rounded-xl border relative group ${key === activeDealKey ? 'bg-ice border-border' : 'border-transparent hover:bg-ice/50'}">
+                <div onclick="selectDeal('${key}')" class="cursor-pointer">
+                    <div class="font-bold text-[13px] mb-1 pr-5">${d.name}</div>
+                    <div class="text-[11px] text-muted mb-2">${d.closeDate === 'Closed' ? 'Closed' : d.closeDate + ' close'}</div>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded ${statusPillClasses(d.statusClass)}">${d.status}</span>
+                </div>
+                <button class="absolute top-3 right-3 text-muted hover:text-amber opacity-0 group-hover:opacity-100 transition-opacity" onclick="event.stopPropagation(); deleteDeal('${key}', '${d.name.replace(/'/g, "\\'")}')" title="Delete deal">
+                    <i class="fa-solid fa-trash text-[11px]"></i>
+                </button>
+            </div>`).join('');
+    }
+
+    function deleteDeal(dealId, dealName) {
+        if (!confirm(`Really delete "${dealName}"? This permanently deletes the deal and every real party, document, message, and file record linked to it. This cannot be undone.`)) return;
+        fetch(`http://localhost:5001/api/deal/${dealId}`, { method: 'DELETE' })
+            .then(r => r.json()).then(async data => {
+                if (!data.ok) { alert('Error deleting: ' + data.error); return; }
+                delete deals[dealId];
+                const remainingKeys = Object.keys(deals);
+                if (remainingKeys.length) { await selectDeal(remainingKeys[0]); } else { renderSidebar(); }
+            })
+            .catch(() => alert("Could not reach Vera's backend."));
+    }
+    window.deleteDeal = deleteDeal;
+
+    function renderHeader(d) {
+        document.getElementById('dealTitle').textContent = d.name;
+        document.getElementById('dealSubtitle').textContent = `${d.value} - ${d.closeDate === 'Closed' ? 'Closed' : d.closeDate + ' close target'}`;
+    }
+
+    function firstIncompleteIndex(d) { return d.milestones.findIndex(m => m.status !== 'Completed' && m.status !== 'Closed'); }
+
+    function renderTimeline(d) {
+        const el = document.getElementById('timelineRow');
+        const activeIdx = firstIncompleteIndex(d);
+        el.innerHTML = d.milestones.map((m, i) => {
+            const state = (m.status === 'Completed' || m.status === 'Closed') ? 'completed' : (i === activeIdx ? 'active' : '');
+            return `<div class="timeline-step ${state}" onclick="jumpToMilestone('${m.label}')"><div class="timeline-dot"></div><div class="text-[10px] font-mono text-muted uppercase tracking-widest mt-3">${m.label}</div></div>`;
+        }).join('');
+    }
+
+    function sendKickoff() {
+        const resultEl = document.getElementById('kickoffResult');
+        resultEl.innerHTML = `<span class="text-muted italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Vera is drafting the kickoff email...</span>`;
+        fetch(`http://localhost:5001/api/kickoff-email/${deals[activeDealKey].dealId}`, { method: 'POST' })
+            .then(r => r.json()).then(data => {
+                if (!data.ok) { resultEl.innerHTML = `<span class="text-amber">Error: ${data.error}</span>`; return; }
+                if (!data.ready) { resultEl.innerHTML = `<span class="text-muted">${data.reason}</span>`; return; }
+                resultEl.innerHTML = `
+                    <div class="p-4 border border-border rounded-lg bg-ice/30">
+                        <p class="text-[11px] font-mono text-muted uppercase mb-2">This will go to, real recipients, uncheck anyone you don't want included</p>
+                        <div class="mb-3 space-y-1" id="kickoffRecipientList">
+                            ${data.recipients.map(r => `<label class="flex items-center gap-2 text-[13px]"><input type="checkbox" class="kickoff-recipient" value="${r.party_id}" checked> ${r.name} &lt;${r.email}&gt;</label>`).join('')}
+                        </div>
+                        <div class="flex gap-2 mb-3">
+                            <input id="kickoffExtraEmail" type="email" placeholder="Add another email address" class="flex-1 text-[13px] border border-border rounded px-2 py-1">
+                            <button class="px-3 py-1 bg-white border border-border text-[12px] font-bold rounded" onclick="addKickoffRecipient()">Add</button>
+                        </div>
+                        <div id="kickoffExtraList" class="mb-3 space-y-1"></div>
+                        <p class="text-[11px] font-mono text-muted uppercase mb-1">Subject</p>
+                        <input id="kickoffSubject" class="w-full text-[13px] border border-border rounded px-2 py-1 mb-3" value="${data.subject}">
+                        <p class="text-[11px] font-mono text-muted uppercase mb-1">Body</p>
+                        <textarea id="kickoffBody" rows="6" class="w-full text-[13px] border border-border rounded px-2 py-1 mb-3">${data.body}</textarea>
+                        <button class="px-4 py-2 bg-action text-white text-[13px] font-bold rounded" onclick="confirmSendKickoff('${data.deal_id}')">Send For Real</button>
+                    </div>`;
+            })
+            .catch(() => { resultEl.innerHTML = `<span class="text-amber">Could not reach Vera's backend.</span>`; });
+    }
+    window.sendKickoff = sendKickoff;
+
+    function addKickoffRecipient() {
+        const input = document.getElementById('kickoffExtraEmail');
+        const email = input.value.trim();
+        if (!email || !email.includes('@')) return;
+        const listEl = document.getElementById('kickoffExtraList');
+        const rowId = 'extra-' + Date.now();
+        listEl.insertAdjacentHTML('beforeend', `<div class="flex items-center justify-between text-[13px]" id="${rowId}"><span class="kickoff-extra-email">${email}</span><button class="text-amber text-[11px]" onclick="document.getElementById('${rowId}').remove()">Remove</button></div>`);
+        input.value = '';
+    }
+    window.addKickoffRecipient = addKickoffRecipient;
+
+    function confirmSendKickoff(dealId) {
+        const resultEl = document.getElementById('kickoffResult');
+        const partyIds = Array.from(document.querySelectorAll('.kickoff-recipient:checked')).map(el => el.value);
+        const extraEmails = Array.from(document.querySelectorAll('.kickoff-extra-email')).map(el => el.textContent);
+        const subject = document.getElementById('kickoffSubject').value;
+        const bodyText = document.getElementById('kickoffBody').value;
+        if (!partyIds.length && !extraEmails.length) { resultEl.innerHTML = `<span class="text-amber">No recipients selected.</span>`; return; }
+        resultEl.innerHTML = `<span class="text-muted italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Sending for real...</span>`;
+        fetch('http://localhost:5001/api/send-kickoff-email', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ deal_id: dealId, party_ids: partyIds, subject, body: bodyText, extra_emails: extraEmails }),
+        }).then(r => r.json()).then(data => {
+            if (!data.ok) { resultEl.innerHTML = `<span class="text-amber">Error: ${data.error}</span>`; return; }
+            resultEl.innerHTML = `<span class="text-action font-bold"><i class="fa-solid fa-check mr-2"></i>Sent for real to: ${data.sent_to.join(', ') || 'nobody, check their info'}. You're CC'd.</span>`;
+        }).catch(() => { resultEl.innerHTML = `<span class="text-amber">Could not reach Vera's backend.</span>`; });
+    }
+    window.confirmSendKickoff = confirmSendKickoff;
+
+    function renderMilestones(d) {
+        document.getElementById('milestoneList').innerHTML = d.milestones.map(m => `
+            <div class="milestone-row flex justify-between items-center py-4 border-b border-border hover:bg-ice/30 transition-all rounded px-2" id="ms-${m.label.replace(/\s+/g,'-')}" data-milestone='${JSON.stringify(m)}' onclick="openMilestoneModalFromEl(this)">
+                <span class="text-sm font-bold">${m.label}</span>
+                <div class="flex gap-12 items-center">
+                    <span class="w-24 text-[12px] font-medium text-muted">${m.due}</span>
+                    <span class="w-24"><span class="text-[10px] font-bold px-2 py-0.5 rounded ${statusPillClasses(m.statusClass)}">${m.status}</span></span>
+                    <span class="w-32 text-[12px] font-medium text-ink/80 truncate">${m.doc}</span>
+                </div>
+            </div>`).join('');
+    }
+
+    function renderDocs(d) {
+        const statusIcon = { received: 'check', verified: 'check', requested: 'clock', flagged: 'triangle-exclamation' };
+        const statusColor = { received: 'action', verified: 'action', requested: 'muted', flagged: 'amber' };
+        document.getElementById('docList').innerHTML = (d.docs || []).map(doc => `
+            <div class="flex items-center justify-between gap-3 py-2 border-b border-border last:border-0 cursor-pointer hover:bg-ice/30 rounded px-1" onclick="openDocModal('${doc.id}')">
+                <div class="flex items-center gap-3">
+                    <div class="w-5 h-5 rounded-full bg-${statusColor[doc.status] || 'muted'} flex items-center justify-center text-[10px] text-white shrink-0"><i class="fa-solid fa-${statusIcon[doc.status] || 'clock'}"></i></div>
+                    <span class="text-sm font-medium text-ink/80">${doc.label} (${doc.status})${doc.responsibleName ? `, from ${doc.responsibleName}` : ', no responsible party identified'}</span>
+                </div>
+                <i class="fa-solid fa-chevron-right text-muted text-[11px]"></i>
+            </div>`).join('');
+    }
+
+    function openDocModal(docId) {
+        const doc = (deals[activeDealKey].docs || []).find(x => x.id === docId);
+        if (!doc) return;
+        const canFollowUp = doc.status !== 'received' && doc.status !== 'verified' && doc.responsibleName;
+        const canUpload = doc.status !== 'received' && doc.status !== 'verified';
+        openModal(`
+            <h3 class="font-display font-extrabold text-xl mb-2">${doc.label}</h3>
+            <p class="text-[13px] text-muted mb-1">Status: ${doc.status}</p>
+            <p class="text-[13px] text-muted mb-6">Responsible party: ${doc.responsibleName || 'none identified'}</p>
+            ${doc.documentId ? `<button class="px-4 py-2 bg-white border border-border rounded-lg text-[13px] font-bold mb-4" onclick="viewStoredFile('${doc.documentId}')">View Stored File</button>` : ''}
+            <div id="docModalAction">
+                ${canFollowUp
+                    ? `<button class="px-4 py-2 bg-ink text-white rounded-lg text-[13px] font-bold mr-2" onclick="draftFollowUp('${doc.id}')">Have Vera Draft a Follow-Up</button>`
+                    : `<p class="text-[12px] text-muted mb-3">${doc.status === 'received' || doc.status === 'verified' ? 'Already received, nothing to follow up on.' : 'No responsible party identified yet, assign one before Vera can reach out.'}</p>`}
+                ${canUpload ? `
+                    <div class="mt-4 pt-4 border-t border-border">
+                        <p class="text-[12px] font-bold mb-2">Already have this document? Upload it directly, no classification needed, this marks it received right away.</p>
+                        <input type="file" id="scopedUploadInput" accept="application/pdf,.xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" class="text-[12px] mb-2">
+                        <button class="px-4 py-2 bg-action text-white rounded-lg text-[13px] font-bold block" onclick="uploadScoped('${doc.id}')">Upload &amp; Mark Received</button>
+                    </div>` : ''}
+            </div>
+            <button class="mt-6 px-4 py-2 bg-white border border-border rounded-lg text-[13px] font-bold" onclick="closeModal()">Close</button>`);
+    }
+    window.openDocModal = openDocModal;
+
+    function viewStoredFile(documentId) {
+        fetch(`http://localhost:5001/api/document-url/${documentId}`)
+            .then(r => r.json()).then(data => {
+                if (data.ok && data.url) { window.open(data.url, '_blank'); }
+                else { alert('Could not retrieve the file: ' + (data.error || 'unknown error')); }
+            });
+    }
+    window.viewStoredFile = viewStoredFile;
+
+    function uploadScoped(itemId) {
+        const input = document.getElementById('scopedUploadInput');
+        if (!input.files.length) { return; }
+        const formData = new FormData();
+        formData.append('file', input.files[0]);
+        fetch(`http://localhost:5001/api/upload-for-item/${itemId}`, { method: 'POST', body: formData })
+            .then(r => r.json())
+            .then(async data => {
+                closeModal();
+                if (data.ok) { const detail = await loadDealDetail(deals[activeDealKey].dealId); if (detail) { Object.assign(deals[activeDealKey], detail); renderAll(); } }
+            });
+    }
+    window.uploadScoped = uploadScoped;
+
+    function renderDraftPreview(data, partyEmail, partyPhone) {
+        if (data.channel === 'email') {
+            return `
+                <div class="border border-border rounded-lg overflow-hidden mb-3">
+                    <div class="bg-ice px-4 py-2 border-b border-border text-[11px] font-mono text-muted">EMAIL DRAFT</div>
+                    <div class="p-4">
+                        <div class="text-[12px] mb-1"><span class="text-muted">To:</span> ${data.party_name} &lt;${partyEmail || 'no email on file'}&gt;</div>
+                        <div class="text-[12px] mb-3"><span class="text-muted">From:</span> Vera (Certaine)</div>
+                        <p class="text-[13px] leading-relaxed border-t border-border pt-3">${data.message}</p>
+                    </div>
+                </div>`;
+        }
+        return `
+            <div class="border border-border rounded-lg overflow-hidden mb-3 max-w-[280px]">
+                <div class="bg-ice px-4 py-2 border-b border-border text-[11px] font-mono text-muted">TEXT DRAFT, to ${data.party_name}</div>
+                <div class="p-4 bg-[#F2F2F7]">
+                    <div class="flex justify-end">
+                        <div class="bg-[#007AFF] text-white px-3 py-2 rounded-2xl rounded-tr-md text-[13px] max-w-[85%]">${data.message}</div>
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    function draftFollowUp(itemId) {
+        const actionEl = document.getElementById('docModalAction');
+        actionEl.innerHTML = `<p class="text-[12px] text-muted italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Vera is drafting a message...</p>`;
+        fetch(`http://localhost:5001/api/draft-action/${itemId}`, { method: 'POST' })
+            .then(r => r.json()).then(data => {
+                if (!data.ok) { actionEl.innerHTML = `<p class="text-amber text-[12px]">Error: ${data.reason}</p>`; return; }
+                if (!data.ready) { actionEl.innerHTML = `<p class="text-muted text-[12px]">Vera can't send this yet: ${data.reason}</p>`; return; }
+                const party = (deals[activeDealKey].parties || []).find(p => p.id === data.party_id) || {};
+                actionEl.innerHTML = `
+                    ${renderDraftPreview(data, party.email, party.phone)}
+                    <p class="text-[11px] text-muted mb-3">${data.channel === 'email' ? 'You\'ll be CC\'d on this, so it lands in your own inbox too.' : 'This sends as a real text, from your Twilio number.'}</p>
+                    <div class="flex gap-2">
+                        <button class="px-4 py-2 bg-action text-white rounded-lg text-[13px] font-bold" onclick='sendDraftedAction(${JSON.stringify(data).replace(/'/g, "&apos;")})'>Send This</button>
+                        <button class="px-4 py-2 bg-white border border-border rounded-lg text-[13px] font-bold" onclick="draftFollowUp('${itemId}')">Redraft</button>
+                    </div>`;
+            })
+            .catch(() => { actionEl.innerHTML = `<p class="text-amber text-[12px]">Could not reach Vera's backend.</p>`; });
+    }
+    window.draftFollowUp = draftFollowUp;
+
+    function sendDraftedAction(draft) {
+        const actionEl = document.getElementById('docModalAction');
+        actionEl.innerHTML = `<p class="text-[12px] text-muted italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Sending for real...</p>`;
+        fetch('http://localhost:5001/api/send-action', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ checklist_item_id: draft.checklist_item_id, party_id: draft.party_id, channel: draft.channel, message: draft.message, deal_id: draft.deal_id }),
+        }).then(r => r.json()).then(data => {
+            if (!data.ok) { actionEl.innerHTML = `<p class="text-amber text-[12px]">Error: ${data.reason}</p>`; return; }
+            actionEl.innerHTML = data.sent
+                ? `<p class="text-action text-[12px] font-bold"><i class="fa-solid fa-check mr-2"></i>Sent for real, via ${data.channel}, to ${data.party}.</p>`
+                : `<p class="text-muted text-[12px]">Vera held back: ${data.reason}</p>`;
+        }).catch(() => { actionEl.innerHTML = `<p class="text-amber text-[12px]">Could not reach Vera's backend.</p>`; });
+    }
+    window.sendDraftedAction = sendDraftedAction;
+
+    function renderLanes(d) {
+        const statusColor = { on_track: 'action', at_risk: 'amber', stalled: 'amber', closed: 'muted' };
+        document.getElementById('laneList').innerHTML = d.lanes.map((l) => `
+            <div class="min-w-[380px] flex-1 bg-white border border-border rounded-xl shadow-sm flex flex-col">
+                <div class="p-5 border-b border-border">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="font-bold text-base">${l.name}</span>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded ${statusPillClasses(statusColor[l.status] || 'muted')}">${(l.status || 'on_track').replace('_', ' ').toUpperCase()}</span>
+                    </div>
+                    <div class="w-full h-2 bg-ice rounded-full overflow-hidden mb-1">
+                        <div class="h-full bg-action" style="width:${l.pct}%"></div>
+                    </div>
+                    <span class="text-[11px] text-muted font-mono">${l.pct}% complete</span>
+                </div>
+
+                ${l.lenderContact ? `
+                <div class="p-4 border-b border-border bg-ice/20">
+                    <div class="text-[10px] font-mono text-muted uppercase mb-1">Lender Contact</div>
+                    <div class="text-[13px] font-bold">${l.lenderContact.name}</div>
+                    <div class="text-[11px] text-muted mb-2">${l.lenderContact.email || 'no email on file'} ${l.lenderContact.phone ? '· ' + l.lenderContact.phone : ''}</div>
+                    ${l.lastActivity
+                        ? `<div class="text-[11px] text-ink/70"><span class="font-bold">Last contact</span> (${l.lastActivity.channel}, ${l.lastActivity.time}): "${l.lastActivity.body.slice(0, 100)}${l.lastActivity.body.length > 100 ? '...' : ''}"</div>`
+                        : `<div class="text-[11px] text-muted italic">No contact yet.</div>`}
+                </div>` : `<div class="p-4 border-b border-border"><p class="text-[11px] text-muted italic">No matched lender contact for this lane.</p></div>`}
+
+                <div class="p-5 flex-1">
+                    <div class="text-[10px] font-mono text-muted uppercase mb-3 tracking-wider">Documents</div>
+                    <div class="space-y-3">
+                        ${l.items.length ? l.items.map(item => `
+                            <div class="flex justify-between items-center cursor-pointer hover:bg-ice/30 rounded px-1 py-1" onclick="openDocModal('${item.id}')">
+                                <div>
+                                    <span class="text-[13px] font-medium text-ink/80">${item.label}</span>
+                                    ${item.responsibleName ? `<span class="text-[10px] text-muted block">${item.responsibleName}</span>` : ''}
+                                </div>
+                                <span class="text-[11px] font-bold px-2 py-0.5 rounded ${statusPillClasses(item.cls)}">${item.status}</span>
+                            </div>`).join('') : `<p class="text-[12px] text-muted italic">No documents assigned to this lane yet.</p>`}
+                    </div>
+                </div>
+            </div>`).join('');
+    }
+
+    function iconFor(icon) {
+        const map = { slack: '<i class="fa-brands fa-slack"></i>', email: '<i class="fa-solid fa-envelope"></i>', call: '<i class="fa-solid fa-phone"></i>', sms: '<i class="fa-solid fa-comment-dots"></i>' };
+        return map[icon] || '';
+    }
+
+    function renderLive(d) {
+        const el = document.getElementById('liveGrid');
+        if (!d.live.length) { el.innerHTML = `<p class="text-[13px] text-muted italic col-span-3">Nothing active right now on this deal.</p>`; return; }
+        el.innerHTML = d.live.map((item, idx) => `
+            <div class="live-card" data-live-idx="${idx}" onclick="openLiveModalFromEl(this)">
+                <div class="flex items-center gap-2 mb-3"><span class="live-dot"></span><span class="text-[10px] font-mono font-bold uppercase text-action tracking-wider">Live</span></div>
+                <div class="comm-icon ${item.icon} mb-4">${iconFor(item.icon)}</div>
+                <p class="text-[13px] font-bold mb-1">${item.label}</p>
+                <p class="text-[12px] text-muted">${item.sub}</p>
+            </div>`).join('');
+    }
+
+    function renderComms(d) {
+        document.getElementById('commCount').textContent = `${d.comms.length} CONTACTS`;
+        document.getElementById('commList').innerHTML = d.comms.map((c, idx) => `
+            <div class="comm-row" data-comm-idx="${idx}" onclick="openCommModalFromEl(this)">
+                <div class="comm-icon ${c.icon}">${iconFor(c.icon)}</div>
+                <div class="flex-1">
+                    <div class="flex justify-between items-start mb-1">
+                        <span class="font-bold text-sm">${c.who} <span class="font-normal text-muted">${c.ctx}</span></span>
+                        <span class="text-[10px] font-mono text-muted">${c.time}</span>
+                    </div>
+                    <p class="text-[13px] text-ink/80 leading-relaxed">${c.body}</p>
+                </div>
+            </div>`).join('');
+    }
+
+    function renderSuggestions(d) {
+        const el = document.getElementById('suggestionQueue');
+        const realGaps = d.suggestions || [];
+        if (!realGaps.length) { el.innerHTML = `<p class="text-[12px] text-muted italic">Nothing needs your attention right now.</p>`; return; }
+        el.innerHTML = `<div class="text-[10px] font-mono font-bold uppercase tracking-widest text-muted mb-4">Vera Suggests</div>` +
+            realGaps.map((g, idx) => `
+            <div class="p-4 rounded-xl border border-action/20 bg-action/5 mb-3" id="gap-${idx}">
+                <div class="flex items-start gap-3 mb-3">
+                    <div class="comm-icon ${g.type === 'missing_document' ? 'email' : 'call'}" style="width:28px;height:28px;font-size:11px;">${iconFor(g.type === 'missing_document' ? 'email' : 'call')}</div>
+                    <div class="flex-1">
+                        <p class="text-[13px] font-bold leading-snug">${g.detail}</p>
+                    </div>
+                </div>
+                ${g.checklist_item_id ? `<button class="px-3 py-1.5 bg-action text-white text-[10px] font-bold rounded" onclick="followUpOnGap('${g.checklist_item_id}', ${idx})">Have Vera Follow Up</button>` : `<p class="text-[11px] text-muted italic">This is a timeline issue, not a document, worth a direct call yourself.</p>`}
+            </div>`).join('');
+    }
+
+    function followUpOnGap(itemId, idx) {
+        const card = document.getElementById('gap-' + idx);
+        card.innerHTML = `<p class="text-[12px] text-muted italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Vera is drafting a message...</p>`;
+        fetch(`http://localhost:5001/api/draft-action/${itemId}`, { method: 'POST' })
+            .then(r => r.json()).then(data => {
+                if (!data.ok) { card.innerHTML = `<p class="text-[12px] text-amber">Error: ${data.reason}</p>`; return; }
+                if (!data.ready) { card.innerHTML = `<p class="text-[12px] text-muted">Vera can't send this yet: ${data.reason}</p>`; return; }
+                card.innerHTML = `
+                    <p class="text-[11px] font-mono text-muted uppercase mb-2">Draft, to ${data.party_name}, via ${data.channel}</p>
+                    <p class="text-[13px] mb-3">"${data.message}"</p>
+                    <button class="px-3 py-1.5 bg-action text-white text-[10px] font-bold rounded" onclick='sendDraftedActionForGap(${JSON.stringify(data).replace(/'/g, "&apos;")}, ${idx})'>Send This</button>`;
+            })
+            .catch(() => { card.innerHTML = `<p class="text-[12px] text-amber">Could not reach Vera's backend.</p>`; });
+    }
+    window.followUpOnGap = followUpOnGap;
+
+    function sendDraftedActionForGap(draft, idx) {
+        const card = document.getElementById('gap-' + idx);
+        card.innerHTML = `<p class="text-[12px] text-muted italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Sending for real...</p>`;
+        fetch('http://localhost:5001/api/send-action', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ checklist_item_id: draft.checklist_item_id, party_id: draft.party_id, channel: draft.channel, message: draft.message, deal_id: draft.deal_id }),
+        }).then(r => r.json()).then(data => {
+            if (!data.ok) { card.innerHTML = `<p class="text-[12px] text-amber">Error: ${data.reason}</p>`; return; }
+            card.innerHTML = data.sent
+                ? `<p class="text-[12px] font-bold text-action"><i class="fa-solid fa-check mr-2"></i>Sent for real, via ${data.channel}, to ${data.party}.</p>`
+                : `<p class="text-[12px] text-muted">Vera held back: ${data.reason}</p>`;
+        }).catch(() => { card.innerHTML = `<p class="text-[12px] text-amber">Could not reach Vera's backend.</p>`; });
+    }
+    window.sendDraftedActionForGap = sendDraftedActionForGap;
+
+    function approveSuggestion(idx) {
+        const card = document.getElementById('sugg-' + idx);
+        card.innerHTML = `<p class="text-[12px] text-muted italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Vera is working on this, contacting the real backend...</p>`;
+        const realDealId = deals[activeDealKey].dealId;
+        fetch(`http://localhost:5001/api/act/${realDealId}`, { method: 'POST' })
+            .then(r => r.json())
+            .then(data => {
+                if (!data.ok) { card.innerHTML = `<p class="text-[12px] text-amber"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Error: ${data.reason || 'backend error'}</p>`; return; }
+                if (data.sent) {
+                    card.innerHTML = `<p class="text-[12px] font-bold text-action"><i class="fa-solid fa-check mr-2"></i>Sent for real, via ${data.channel}, to ${data.party}. This is a genuine message that just went out, not a demo.</p>`;
+                } else {
+                    card.innerHTML = `<p class="text-[12px] text-muted"><i class="fa-solid fa-circle-info mr-2"></i>Vera held back: ${data.reason}</p>`;
+                }
+            })
+            .catch(err => { card.innerHTML = `<p class="text-[12px] text-amber">Could not reach Vera's backend. Is server.py running?</p>`; });
+    }
+    window.approveSuggestion = approveSuggestion;
+    function dismissSuggestion(idx) {
+        const card = document.getElementById('sugg-' + idx);
+        card.innerHTML = `<p class="text-[12px] text-muted italic">Got it, you're handling this one directly.</p>`;
+    }
+    window.dismissSuggestion = dismissSuggestion;
+
+    function renderDealInfo(d) {
+        document.getElementById('sidePanelInfo').innerHTML = `
+            <div class="space-y-6">
+                <div><div class="text-[10px] font-mono font-bold uppercase text-muted mb-1">Property</div><p class="text-[13px] font-bold">${d.info.address}</p></div>
+                <div><div class="text-[10px] font-mono font-bold uppercase text-muted mb-1">Deal Value</div><p class="text-[13px] font-bold">${d.value}</p></div>
+                <div><div class="text-[10px] font-mono font-bold uppercase text-muted mb-1">Sponsor</div><p class="text-[13px]">${d.info.sponsor}</p></div>
+                <div><div class="text-[10px] font-mono font-bold uppercase text-muted mb-1">Buyer</div><p class="text-[13px]">${d.info.buyer}</p></div>
+                <div><div class="text-[10px] font-mono font-bold uppercase text-muted mb-1">Attorneys</div><p class="text-[13px] leading-relaxed">${d.info.attorneys}</p></div>
+                <div><div class="text-[10px] font-mono font-bold uppercase text-muted mb-1">Broker of Record</div><p class="text-[13px]">${d.info.broker}</p></div>
+                <div>
+                    <div class="text-[10px] font-mono font-bold uppercase text-muted mb-1">Notes</div>
+                    <textarea id="dealNotesInput" rows="4" class="w-full text-[13px] border border-border rounded-lg p-2">${d.info.notes || ''}</textarea>
+                    <button class="mt-2 px-3 py-1.5 bg-ink text-white text-[11px] font-bold rounded" onclick="saveNotes()">Save Notes</button>
+                    <span id="notesSaved" class="text-[11px] text-action ml-2"></span>
+                </div>
+                <div class="pt-4 border-t border-border">
+                    <div class="text-[10px] font-mono font-bold uppercase text-muted mb-2">Add a party manually</div>
+                    <input id="newPartyName" placeholder="Name" class="w-full text-[12px] border border-border rounded px-2 py-1.5 mb-2">
+                    <input id="newPartyEmail" placeholder="Email" class="w-full text-[12px] border border-border rounded px-2 py-1.5 mb-2">
+                    <input id="newPartyPhone" placeholder="Phone" class="w-full text-[12px] border border-border rounded px-2 py-1.5 mb-2">
+                    <select id="newPartyRole" class="w-full text-[12px] border border-border rounded px-2 py-1.5 mb-2">
+                        <option value="other">Other</option><option value="sponsor">Sponsor</option><option value="buyer">Buyer</option>
+                        <option value="seller">Seller</option><option value="lender_contact">Lender Contact</option>
+                        <option value="attorney">Attorney</option><option value="title_company">Title Company</option>
+                    </select>
+                    <button class="px-3 py-1.5 bg-ink text-white text-[11px] font-bold rounded" onclick="addPartyManually()">Add Party</button>
+                    <span id="addPartyResult" class="text-[11px] ml-2"></span>
+                </div>
+            </div>`;
+    }
+
+    function saveNotes() {
+        const notes = document.getElementById('dealNotesInput').value;
+        fetch(`http://localhost:5001/api/deal/${deals[activeDealKey].dealId}/notes`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ notes }),
+        }).then(r => r.json()).then(data => {
+            document.getElementById('notesSaved').textContent = data.ok ? 'Saved.' : 'Error saving.';
+            deals[activeDealKey].info.notes = notes;
+            setTimeout(() => { const el = document.getElementById('notesSaved'); if (el) el.textContent = ''; }, 2000);
+        });
+    }
+    window.saveNotes = saveNotes;
+
+    function addPartyManually() {
+        const name = document.getElementById('newPartyName').value.trim();
+        const email = document.getElementById('newPartyEmail').value.trim();
+        const phone = document.getElementById('newPartyPhone').value.trim();
+        const role = document.getElementById('newPartyRole').value;
+        const resultEl = document.getElementById('addPartyResult');
+        if (!name) { resultEl.innerHTML = '<span class="text-amber">Name required.</span>'; return; }
+        fetch(`http://localhost:5001/api/deal/${deals[activeDealKey].dealId}/party`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, phone, role }),
+        }).then(r => r.json()).then(async data => {
+            if (!data.ok) { resultEl.innerHTML = `<span class="text-amber">Error: ${data.error}</span>`; return; }
+            resultEl.innerHTML = '<span class="text-action">Added, review it in Overview.</span>';
+            const detail = await loadDealDetail(deals[activeDealKey].dealId);
+            if (detail) { Object.assign(deals[activeDealKey], detail); renderAll(); }
+        });
+    }
+    window.addPartyManually = addPartyManually;
+
+    function setSidePanel(panel) {
+        document.getElementById('sideTabVera').classList.toggle('border-b-2', panel === 'vera');
+        document.getElementById('sideTabVera').classList.toggle('border-action', panel === 'vera');
+        document.getElementById('sideTabVera').classList.toggle('opacity-40', panel !== 'vera');
+        document.getElementById('sideTabInfo').classList.toggle('border-b-2', panel === 'info');
+        document.getElementById('sideTabInfo').classList.toggle('border-action', panel === 'info');
+        document.getElementById('sideTabInfo').classList.toggle('opacity-40', panel !== 'info');
+        document.getElementById('sidePanelVera').classList.toggle('hidden', panel !== 'vera');
+        document.getElementById('sidePanelInfo').classList.toggle('hidden', panel !== 'info');
+        document.getElementById('chatInputBar').classList.toggle('hidden', panel !== 'vera');
+    }
+    window.setSidePanel = setSidePanel;
+
+    function openPortfolioModal() {
+        openModal(`<h3 class="font-display font-extrabold text-xl mb-6">Portfolio</h3>
+            <div class="space-y-3">
+            ${Object.entries(deals).map(([key,d]) => `
+                <div class="flex justify-between items-center p-4 rounded-xl border border-border cursor-pointer hover:bg-ice/50" onclick="selectDeal('${key}'); closeModal();">
+                    <div><div class="font-bold text-[13px]">${d.name}</div><div class="text-[11px] text-muted">${d.value} - ${d.closeDate === 'Closed' ? 'Closed' : d.closeDate}</div></div>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded ${statusPillClasses(d.statusClass)}">${d.status}</span>
+                </div>`).join('')}
+            </div>`);
+    }
+    window.openPortfolioModal = openPortfolioModal;
+
+    function renderAll() {
+        const d = deals[activeDealKey];
+        renderSidebar(); renderHeader(d); renderTimeline(d); renderMilestones(d); renderDocs(d); renderLanes(d); renderLive(d); renderComms(d); renderSuggestions(d); renderDealInfo(d); renderPartyReview(d);
+    }
+
+    async function selectDeal(key) {
+        activeDealKey = key;
+        if (!deals[key].loaded) {
+            const detail = await loadDealDetail(deals[key].dealId);
+            if (detail) { Object.assign(deals[key], detail, { loaded: true }); }
+        }
+        renderAll();
+    }
+    window.selectDeal = selectDeal;
+
+    function setTab(tab) {
+        document.querySelectorAll('#tabs-nav [data-tab]').forEach(t => { t.classList.toggle('tab-active', t.dataset.tab === tab); t.classList.toggle('tab-inactive', t.dataset.tab !== tab); });
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab-' + tab));
+        if (tab === 'files') loadFilesTab();
+    }
+    window.setTab = setTab;
+    document.querySelectorAll('#tabs-nav [data-tab]').forEach(t => t.addEventListener('click', () => setTab(t.dataset.tab)));
+
+    function loadFilesTab() {
+        const listEl = document.getElementById('filesList');
+        listEl.innerHTML = `<p class="text-[13px] text-muted italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Loading real files...</p>`;
+        fetch(`http://localhost:5001/api/deal/${deals[activeDealKey].dealId}/files`)
+            .then(r => r.json()).then(data => {
+                if (!data.ok) { listEl.innerHTML = `<p class="text-amber text-[13px]">Error: ${data.error}</p>`; return; }
+                if (!data.files.length) { listEl.innerHTML = `<p class="text-[13px] text-muted italic">No files stored for this deal yet. Upload one from a document's modal, or the drop zone in Overview.</p>`; return; }
+                listEl.innerHTML = data.files.map(f => `
+                    <div class="flex justify-between items-center py-3 border-b border-border last:border-0">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-file-pdf text-amber"></i>
+                            <span class="text-[13px] font-medium">${f.name}</span>
+                            ${f.size ? `<span class="text-[11px] text-muted">${Math.round(f.size / 1024)} KB</span>` : ''}
+                        </div>
+                        <button class="px-3 py-1 bg-white border border-border text-[11px] font-bold rounded" onclick='viewFileByPath("${f.path}")'>View</button>
+                    </div>`).join('');
+            })
+            .catch(() => { listEl.innerHTML = `<p class="text-amber text-[13px]">Could not reach Vera's backend.</p>`; });
+    }
+    window.loadFilesTab = loadFilesTab;
+
+    function uploadFromFilesTab() {
+        const input = document.getElementById('filesTabUploadInput');
+        const statusEl = document.getElementById('filesTabUploadStatus');
+        if (!input.files.length) { statusEl.innerHTML = `<span class="text-amber">Choose a PDF first.</span>`; return; }
+        statusEl.innerHTML = `<span class="text-muted italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Vera is reading and filing this...</span>`;
+        const formData = new FormData();
+        formData.append('file', input.files[0]);
+        fetch(`http://localhost:5001/api/upload-document/${deals[activeDealKey].dealId}`, { method: 'POST', body: formData })
+            .then(r => r.json()).then(data => {
+                if (!data.ok) { statusEl.innerHTML = `<span class="text-amber">Error: ${data.error}</span>`; return; }
+                const c = data.classification;
+                statusEl.innerHTML = `<span class="text-action font-bold">Stored as ${c.document_type.replace(/_/g, ' ')}${c.matches_checklist_item_id ? ', matched to an open checklist item' : ', no checklist match found, but the file is safely stored'}.</span>`;
+                input.value = '';
+                loadFilesTab();
+            })
+            .catch(() => { statusEl.innerHTML = `<span class="text-amber">Could not reach Vera's backend.</span>`; });
+    }
+    window.uploadFromFilesTab = uploadFromFilesTab;
+
+    function viewFileByPath(path) {
+        fetch('http://localhost:5001/api/file-url', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path }),
+        }).then(r => r.json()).then(data => {
+            if (data.ok && data.url) { window.open(data.url, '_blank'); }
+            else { alert('Could not retrieve the file.'); }
+        });
+    }
+    window.viewFileByPath = viewFileByPath;
+
+    function jumpToMilestone(label) {
+        setTab('overview');
+        setTimeout(() => {
+            const row = document.getElementById('ms-' + label.replace(/\s+/g,'-'));
+            if (row) { row.scrollIntoView({behavior:'smooth', block:'center'}); row.classList.add('highlight'); setTimeout(() => row.classList.remove('highlight'), 1500); }
+        }, 50);
+    }
+    window.jumpToMilestone = jumpToMilestone;
+
+    function openModal(html) { document.getElementById('modalBox').innerHTML = html; document.getElementById('modalOverlay').classList.add('show'); }
+    function closeModal() { document.getElementById('modalOverlay').classList.remove('show'); }
+    window.closeModal = closeModal;
+    document.getElementById('modalOverlay').addEventListener('click', (e) => { if (e.target.id === 'modalOverlay') closeModal(); });
+
+    function openMilestoneModalFromEl(el) {
+        const m = JSON.parse(el.dataset.milestone);
+        openModal(`<h3 class="font-display font-extrabold text-xl mb-2">${m.label}</h3>
+            <p class="text-[12px] font-mono text-muted mb-6">Due ${m.due} - ${m.status}</p>
+            <p class="text-[14px] leading-relaxed text-ink/80 mb-6">${m.detail}</p>
+            <button class="px-4 py-2 bg-ink text-white rounded-lg text-[13px] font-bold" onclick="closeModal()">Close</button>`);
+    }
+    window.openMilestoneModalFromEl = openMilestoneModalFromEl;
+
+    function openCommModalFromEl(el) {
+        const c = deals[activeDealKey].comms[el.dataset.commIdx];
+        openModal(`<div class="comm-icon ${c.icon} mb-4">${iconFor(c.icon)}</div>
+            <h3 class="font-display font-extrabold text-lg mb-1">${c.who}</h3>
+            <p class="text-[12px] text-muted mb-1">${c.ctx}</p>
+            <p class="text-[11px] font-mono text-muted mb-6">${c.time}</p>
+            <p class="text-[14px] leading-relaxed text-ink/80 mb-6">${c.body}</p>
+            <button class="px-4 py-2 bg-ink text-white rounded-lg text-[13px] font-bold" onclick="closeModal()">Close</button>`);
+    }
+    window.openCommModalFromEl = openCommModalFromEl;
+
+    function openLiveModalFromEl(el) {
+        const item = deals[activeDealKey].live[el.dataset.liveIdx];
+        openModal(`<div class="comm-icon ${item.icon} mb-4">${iconFor(item.icon)}</div>
+            <h3 class="font-display font-extrabold text-lg mb-1">${item.label}</h3>
+            <p class="text-[13px] leading-relaxed text-ink/80 mb-6">${item.sub}</p>
+            <button class="px-4 py-2 bg-ink text-white rounded-lg text-[13px] font-bold" onclick="closeModal()">Close</button>`);
+    }
+    window.openLiveModalFromEl = openLiveModalFromEl;
+
+    const chatThread = document.getElementById('chatThread');
+    chatThread.innerHTML = `<div class="text-center"><span class="text-[10px] font-mono text-muted uppercase font-bold tracking-widest">Ask Vera anything else</span></div>`;
+
+    function askVera() {
+        const input = document.getElementById('chatInput');
+        const q = input.value.trim(); if (!q) return; input.value = '';
+        chatThread.insertAdjacentHTML('beforeend', `<div class="flex justify-end"><div class="max-w-[85%] bg-ice border border-border p-5 rounded-2xl rounded-tr-none shadow-sm"><p class="text-[13px] font-bold leading-relaxed">${q}</p></div></div>`);
+        const loadingId = 'load-' + Date.now();
+        chatThread.insertAdjacentHTML('beforeend', `<p id="${loadingId}" class="text-[12px] text-muted italic">Vera is thinking...</p>`);
+        chatThread.scrollTop = chatThread.scrollHeight;
+        const realDealId = deals[activeDealKey].dealId;
+        fetch(`http://localhost:5001/api/triage/${realDealId}?q=${encodeURIComponent(q)}`).then(r => r.json()).then(data => {
+            document.getElementById(loadingId).remove();
+            chatThread.insertAdjacentHTML('beforeend', `<p class="text-[13px] leading-relaxed text-ink/90">${data.ok ? data.vera_plan.replace(/\n/g,'<br>') : 'Backend error: ' + data.error}</p>`);
+            chatThread.scrollTop = chatThread.scrollHeight;
+        }).catch(err => { document.getElementById(loadingId).textContent = "Could not reach Vera's backend. Is server.py running?"; });
+    }
+    document.getElementById('chatSend').addEventListener('click', askVera);
+    document.getElementById('chatInput').addEventListener('keydown', e => { if (e.key === 'Enter') askVera(); });
+
+    loadAllDeals();
+
+    function handleUploadedFile(file) {
+        const reviewEl = document.getElementById('uploadReviewCard');
+        reviewEl.innerHTML = `<p class="text-[12px] text-muted italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Vera is reading this document...</p>`;
+        const formData = new FormData();
+        formData.append('file', file);
+        fetch(`http://localhost:5001/api/upload-document/${deals[activeDealKey].dealId}`, { method: 'POST', body: formData })
+            .then(r => r.json()).then(data => {
+                if (!data.ok) { reviewEl.innerHTML = `<p class="text-amber text-[12px]">Error: ${data.error}</p>`; return; }
+                const c = data.classification;
+                const docsForDeal = deals[activeDealKey].docs || [];
+                reviewEl.innerHTML = `
+                    <div class="p-4 rounded-xl border border-forest/20 bg-ice/40">
+                        <p class="text-[13px] font-bold mb-1">Vera thinks this is: ${c.document_type.replace(/_/g, ' ')} (${c.confidence} confidence)</p>
+                        <p class="text-[12px] text-muted mb-3">${c.reasoning}</p>
+                        ${c.matches_checklist_item_id
+                            ? `<p class="text-[12px] mb-3">This looks like it satisfies an open item for <b>${deals[activeDealKey].name}</b>. Is that right?</p>
+                               <div class="flex gap-2 mb-3">
+                                   <button class="px-3 py-1.5 bg-action text-white text-[11px] font-bold rounded" onclick="confirmUploadMatch('${c.matches_checklist_item_id}', true, '${c.document_id}')">Yes, mark it received</button>
+                                   <button class="px-3 py-1.5 bg-white border border-border text-[11px] font-bold rounded" onclick="showCorrectionDropdown('${c.document_id}')">No, it's actually something else</button>
+                               </div>`
+                            : `<p class="text-[12px] text-amber mb-3">No confident match found on this deal's checklist. The file is still stored though, you can assign it manually below.</p>`}
+                        <div id="correctionArea"></div>
+                    </div>`;
+                window._docsForCorrection = docsForDeal;
+            })
+            .catch(() => { reviewEl.innerHTML = `<p class="text-amber text-[12px]">Could not reach Vera's backend.</p>`; });
+    }
+
+    function showCorrectionDropdown(documentId) {
+        const areaEl = document.getElementById('correctionArea');
+        const docs = window._docsForCorrection || [];
+        areaEl.innerHTML = `
+            <p class="text-[12px] font-bold mb-2">Which document is this actually?</p>
+            <select id="correctionSelect" class="w-full text-[12px] border border-border rounded px-2 py-1.5 mb-2">
+                ${docs.map(d => `<option value="${d.id}">${d.label} (currently ${d.status})</option>`).join('')}
+            </select>
+            <button class="px-3 py-1.5 bg-action text-white text-[11px] font-bold rounded" onclick="confirmCorrection('${documentId}')">Confirm Correct Match</button>`;
+    }
+    window.showCorrectionDropdown = showCorrectionDropdown;
+
+    function confirmCorrection(documentId) {
+        const itemId = document.getElementById('correctionSelect').value;
+        confirmUploadMatch(itemId, true, documentId);
+    }
+    window.confirmCorrection = confirmCorrection;
+
+    function confirmUploadMatch(itemId, confirmed, documentId) {
+        fetch('http://localhost:5001/api/confirm-document', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ checklist_item_id: itemId, confirmed, document_id: documentId }),
+        }).then(r => r.json()).then(async () => {
+            document.getElementById('uploadReviewCard').innerHTML = confirmed
+                ? `<p class="text-action text-[12px] font-bold"><i class="fa-solid fa-check mr-2"></i>Marked received.</p>`
+                : `<p class="text-muted text-[12px]">Got it, not marking that as received.</p>`;
+            if (confirmed) {
+                const detail = await loadDealDetail(deals[activeDealKey].dealId);
+                if (detail) { Object.assign(deals[activeDealKey], detail); renderAll(); }
+            }
+        });
+    }
+    window.confirmUploadMatch = confirmUploadMatch;
+
+    const dropZone = document.getElementById('uploadDropZone');
+    const dropInput = document.getElementById('uploadDropInput');
+    dropZone.addEventListener('click', () => dropInput.click());
+    dropInput.addEventListener('change', () => { if (dropInput.files.length) handleUploadedFile(dropInput.files[0]); });
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('bg-ice/60'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('bg-ice/60'));
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault(); dropZone.classList.remove('bg-ice/60');
+        if (e.dataTransfer.files.length) handleUploadedFile(e.dataTransfer.files[0]);
+    });
+
+    function showIntakeDraft(extraction, resultEl) {
+        window._currentDraft = extraction;
+        resultEl.innerHTML = `
+            <div class="p-4 rounded-xl border border-forest/20 bg-ice/40">
+                <p class="text-[13px] font-bold mb-3">Vera read this and extracted the following. Check it, fix anything wrong, then confirm.</p>
+
+                <label class="block text-[11px] font-mono text-muted uppercase mb-1">Deal Name</label>
+                <input id="draftDealName" class="w-full text-[13px] border border-border rounded px-2 py-1.5 mb-2" value="${extraction.deal_name || ''}">
+
+                <label class="block text-[11px] font-mono text-muted uppercase mb-1">Property Address</label>
+                <input id="draftAddress" class="w-full text-[13px] border border-border rounded px-2 py-1.5 mb-2" value="${extraction.property_address || ''}">
+
+                <div class="grid grid-cols-2 gap-2 mb-2">
+                    <div>
+                        <label class="block text-[11px] font-mono text-muted uppercase mb-1">Deal Type</label>
+                        <select id="draftDealType" class="w-full text-[13px] border border-border rounded px-2 py-1.5">
+                            <option value="debt" ${extraction.deal_type === 'debt' ? 'selected' : ''}>Debt</option>
+                            <option value="sales" ${extraction.deal_type === 'sales' ? 'selected' : ''}>Sales</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-mono text-muted uppercase mb-1">Target Close</label>
+                        <input id="draftCloseDate" type="date" class="w-full text-[13px] border border-border rounded px-2 py-1.5" value="${extraction.target_close_date || ''}">
+                    </div>
+                </div>
+
+                <label class="block text-[11px] font-mono text-muted uppercase mb-1">Deal Value ($)</label>
+                <input id="draftValue" type="number" class="w-full text-[13px] border border-border rounded px-2 py-1.5 mb-4" value="${extraction.deal_value_dollars || ''}">
+
+                <label class="block text-[11px] font-mono text-muted uppercase mb-1">Parties (${extraction.parties.length})</label>
+                <div id="draftPartiesList" class="space-y-2 mb-4">
+                    ${extraction.parties.map((p, i) => `
+                        <div class="flex items-center gap-2 text-[12px]" id="draft-party-${i}">
+                            <span class="font-mono text-[10px] text-muted bg-ice px-1.5 py-0.5 rounded">${p.role}</span>
+                            <input class="flex-1 border border-border rounded px-2 py-1" value="${p.name}" onchange="window._currentDraft.parties[${i}].name = this.value">
+                            <button class="text-amber text-[11px]" onclick="removeDraftParty(${i})">Remove</button>
+                        </div>`).join('')}
+                </div>
+
+                <label class="block text-[11px] font-mono text-muted uppercase mb-1">Milestones (${(extraction.milestones || []).length})</label>
+                <div class="text-[12px] text-muted mb-4">${(extraction.milestones || []).map(m => `${m.label}: ${m.due_date}`).join(', ') || 'None identified'}</div>
+
+                <label class="block text-[11px] font-mono text-muted uppercase mb-1">Document Checklist (${(extraction.checklist || []).length})</label>
+                <div class="text-[12px] text-muted mb-4">${(extraction.checklist || []).map(c => c.document_type.replace(/_/g, ' ')).join(', ') || 'None identified'}</div>
+
+                <button class="px-4 py-2 bg-action text-white rounded-lg text-[13px] font-bold" onclick="confirmIntakeDraft()">This Is Correct, Create The Deal</button>
+            </div>`;
+    }
+
+    function removeDraftParty(idx) {
+        window._currentDraft.parties.splice(idx, 1);
+        showIntakeDraft(window._currentDraft, document.getElementById('intakeResult'));
+    }
+    window.removeDraftParty = removeDraftParty;
+
+    function confirmIntakeDraft() {
+        const d = window._currentDraft;
+        d.deal_name = document.getElementById('draftDealName').value;
+        d.property_address = document.getElementById('draftAddress').value;
+        d.deal_type = document.getElementById('draftDealType').value;
+        d.target_close_date = document.getElementById('draftCloseDate').value || null;
+        d.deal_value_dollars = parseFloat(document.getElementById('draftValue').value) || null;
+
+        const resultEl = document.getElementById('intakeResult');
+        resultEl.innerHTML = `<span class="text-muted italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Creating the real deal...</span>`;
+        fetch('http://localhost:5001/api/confirm-intake', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ extraction: d }),
+        }).then(r => r.json()).then(async data => {
+            if (!data.ok) { resultEl.innerHTML = `<span class="text-amber">Error: ${data.error}</span>`; return; }
+            resultEl.innerHTML = `<span class="text-action font-bold"><i class="fa-solid fa-check mr-2"></i>Real deal created. Switching to it now.</span>`;
+            await loadAllDeals();
+            await selectDeal(data.deal_id);
+        }).catch(() => { resultEl.innerHTML = `<span class="text-amber">Could not reach Vera's backend.</span>`; });
+    }
+    window.confirmIntakeDraft = confirmIntakeDraft;
+
+    document.getElementById('intakeSubmit').addEventListener('click', () => {
+        const text = document.getElementById('intakeText').value.trim();
+        const resultEl = document.getElementById('intakeResult');
+        if (!text) { resultEl.innerHTML = `<span class="text-amber">Paste some agreement text first.</span>`; return; }
+        resultEl.innerHTML = `<span class="text-muted italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Vera is reading this...</span>`;
+        fetch('http://localhost:5001/api/draft-intake', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }),
+        }).then(r => r.json()).then(data => {
+            document.getElementById('intakeText').value = '';
+            if (!data.ok) { resultEl.innerHTML = `<span class="text-amber">Error: ${data.error}</span>`; return; }
+            showIntakeDraft(data.extraction, resultEl);
+        }).catch(() => { resultEl.innerHTML = `<span class="text-amber">Could not reach Vera's backend. Is server.py running?</span>`; });
+    });
+
+    document.getElementById('intakeFileSubmit').addEventListener('click', () => {
+        const fileInput = document.getElementById('intakeFile');
+        const resultEl = document.getElementById('intakeResult');
+        if (!fileInput.files.length) { resultEl.innerHTML = `<span class="text-amber">Choose a file first.</span>`; return; }
+        resultEl.innerHTML = `<span class="text-muted italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Vera is reading the file...</span>`;
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+        fetch('http://localhost:5001/api/draft-intake-pdf', { method: 'POST', body: formData })
+            .then(r => r.json()).then(data => {
+                fileInput.value = '';
+                if (!data.ok) { resultEl.innerHTML = `<span class="text-amber">Error: ${data.error}</span>`; return; }
+                showIntakeDraft(data.extraction, resultEl);
+            })
+            .catch(() => { resultEl.innerHTML = `<span class="text-amber">Could not reach Vera's backend. Is server.py running?</span>`; });
+    });
+    </script>
+</body>
+</html>
